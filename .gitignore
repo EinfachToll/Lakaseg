@@ -1,0 +1,9 @@
+*.swp
+*.png
+*.json
+*.bmp
+*.o
+*.so
+*.pyc
+.directory
+lakaseg
