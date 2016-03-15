@@ -553,6 +553,7 @@ public:
             // trennbar sind, z.B. weil sie identisch sind
             if(total_left == 0 || total_right == 0) {
                 --try_count;
+                delete random_test_object;
                 continue;
             }
 
@@ -588,6 +589,7 @@ public:
 
             if(expected_entropy < lowest_expected_entropy) {
                 lowest_expected_entropy = expected_entropy;
+                delete best_test;
                 best_test = random_test_object;
                 // wenn rechts oder links nur Beispiele aus einer einzigen
                 // Klasse ankommen, ist die Entropie dort 0. In diesem Fall
@@ -1214,6 +1216,7 @@ public:
             forest.trees.push_back(Tree<T>::from_json(root_array[i]));
         }
 
+        delete value;
         return forest;
     }
 
