@@ -1220,42 +1220,44 @@ public:
         return forest;
     }
 
+
+    // zum testen; vergleicht das Ergebnis der Inferenz mit einem von Hand
+    // gelabelten Bild und schreibt das Resultat in eine Datei
+    void print_result_statistics(const char* ground_truth_filename, CImg<unsigned char>* result)
+    {
+        CImg<unsigned char> ground_truth;
+
+        try{
+            ground_truth.assign(ground_truth_filename);
+        } catch (...) {
+            std::cerr << "Fehler: " << ground_truth_filename << " konnte nicht gelesen werden" << std::endl;
+            std::exit(1);
+        }
+
+        // zählt true-negative, false-negative, false-positive und true-positive
+        unsigned long count_right_and_wrong[4] = { 0, 0, 0, 0 };
+
+        cimg_for_insideXY((*result), x, y, WINDOW_RADIUS) {
+            unsigned char gt_label = ground_truth(x, y);
+            if(gt_label > 0) {
+                bool result_is_foreground = (*result)(x, y) == this->foreground_color;
+                bool ground_truth_is_foreground = gt_label == this->foreground_color;
+                count_right_and_wrong[2*result_is_foreground + ground_truth_is_foreground] += 1;
+            }
+        }
+
+        // das F-Maß: 1 / (1 + FP+FN/2TP)
+        double f_measure = 1.0 / (1.0 + static_cast<double>(count_right_and_wrong[2]+count_right_and_wrong[1]) / static_cast<double>(2*count_right_and_wrong[3]));
+
+        std::ostringstream out;
+        out << f_measure << '\n';
+        std::fstream out_file("ergebnisse.txt", std::ios::out);
+        out_file << out.str();
+    }
+
 };
 
 
-// zum testen; vergleicht das Ergebnis der Inferenz mit einem von Hand
-// gelabelten Bild und schreibt das Resultat in eine Datei
-static void print_result_statistics(const char* ground_truth_filename, CImg<unsigned char>* result)
-{
-    CImg<unsigned char> ground_truth;
-
-    try{
-        ground_truth.assign(ground_truth_filename);
-    } catch (...) {
-        std::cerr << "Fehler: " << ground_truth_filename << " konnte nicht gelesen werden" << std::endl;
-        std::exit(1);
-    }
-
-    unsigned long number_of_labeled_pixels = 0;
-    unsigned long number_of_correctly_labeled_pixels = 0;
-
-    cimg_for_insideXY((*result), x, y, WINDOW_RADIUS) {
-        unsigned char gt_label = ground_truth(x, y);
-        if(gt_label > 0) {
-            ++number_of_labeled_pixels;
-            if((*result)(x, y) == gt_label) {
-                ++number_of_correctly_labeled_pixels;
-            }
-        }
-    }
-
-    std::ostringstream out;
-
-    out << '(' << number_of_labeled_pixels << ", " << number_of_correctly_labeled_pixels << ")\n";
-
-    std::fstream out_file("ergebnisse.txt", std::ios::out);
-    out_file << out.str();
-}
 
 
 
@@ -1318,7 +1320,7 @@ void inference(const char* input_image_filename, const char* json_file, const ch
 
 
     if(ground_truth_image != NULL) {
-        print_result_statistics(ground_truth_image, result);
+        forest.print_result_statistics(ground_truth_image, result);
     }
 
     if(result_filename != NULL) {
