@@ -20,9 +20,12 @@ bin: $(RESULT_BINARY_NAME)
 debug: OPTIMIZATION=-g
 debug: $(RESULT_LIB_NAME)
 
+bin_debug: OPTIMIZATION=-g
+bin_debug: $(RESULT_BINARY_NAME)
 
 clean:
 	rm -f $(RESULT_BINARY_NAME) $(RESULT_LIB_NAME) lakaseg.o
 
+release: $(RESULT_LIB_NAME) bin
 
 .PHONY: bin clean
