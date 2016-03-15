@@ -3,8 +3,7 @@ Diplomarbeit "Semantische Segmentierung historischer topographischer Karten".
 
 Eventuelle Updates wird es unter https://github.com/EinfachToll/Lakaseg geben
 
-
-Installation
+Kompilieren
 ============
 
 - benötigt ImageMagick oder GraphicsMagick (unter Linux i.A. vorinstalliert,
@@ -13,19 +12,21 @@ Installation
 - Für Linux oder Cygwin gibt es ein Makefile. Erstellen der Bibliothek mit
   'make'. Erstellen einer Binärdatei mit 'make bin'.
 
-- Für Visual Studio liegt eine Solution-Datei vor (Lakaseg.sln). Die Datei ist
-  ursprünglich für Visual Studio 2008. Falls die .sln-Datei nicht kompatibel
-  mit der verwendeten Visual-Studio-Version ist, hier eine kleine Anleitung zum
+- Für Visual Studio liegt eine Solution-Datei vor (Lakaseg.sln). Die Datei
+  wurde ursprünglich mit Visual Studio 2008 erstellt, wurde aber auch
+  erfolgreich mit VS 2013 getestet. Falls die .sln-Datei nicht kompatibel mit
+  der verwendeten Visual-Studio-Version ist, hier eine kleine Anleitung zum
   Anlegen des Projekts:
-    für eine Exe-Datei:
+
+  für die Exe-Datei:
     - Projekt anlegen
     - lakaseg.cpp zu dem source-Ordner hinzufügen
     - Projekteigenschaften -> C/C++ -> General -> Additional Include
       Directories -> 3rd_party/ reinschreiben
     - evtl. C/C++ -> Optimization -> Optimization -> /O2 einschalten
-    - für OpenMP bei C/C++ -> Command Line -> Additional options /openmp dazu
+    - für OpenMP: bei C/C++ -> Command Line -> Additional options /openmp dazu
 
-    für die DLL:
+  für die DLL:
     - Projekt anlegen, dabei bei Application Settings das Kästchen Empty
       project ankreuzen und bei Application type den Knubbel DLL
     - ansonsten wie oben
