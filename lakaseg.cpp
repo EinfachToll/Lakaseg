@@ -67,6 +67,7 @@ unsigned short MAX_TREE_DEPTH;
 unsigned int TESTOBJECT_TRIES;
 unsigned short FOREST_SIZE;
 
+unsigned int GIBBS_SAMPLING_STEPS;
 double PAIRWISE_ENERGY;
 double PAIRWISE_FACTOR;
 
@@ -1102,10 +1103,9 @@ public:
             (*y_t)(x, y) = rand() % 2;
         }
 
-        const unsigned int N = 2000; // die Anzahl der Samplingschritte
-        for(unsigned int versuch = 0; versuch < N+10; ++versuch) {
+        for(unsigned int versuch = 0; versuch < GIBBS_SAMPLING_STEPS+10; ++versuch) {
             if(versuch % 100 == 0) {
-                std::cout << "Sampling-Schritt " << versuch << " von " << N << std::endl;
+                std::cout << "Sampling-Schritt " << versuch << " von " << GIBBS_SAMPLING_STEPS << std::endl;
             }
 
             // die Variablen in y_t einzeln sampeln, basierend auf den
@@ -1148,7 +1148,7 @@ public:
 
         CImg<unsigned char>* result = new CImg<unsigned char>(image.width(), image.height(), 1, 1, 0);
         cimg_for_insideXY((*result), x, y, WINDOW_RADIUS) {
-            (*result)(x, y) = (count_ones(x-WINDOW_RADIUS, y-WINDOW_RADIUS) > (N/2) ? this->background_color : this->foreground_color);
+            (*result)(x, y) = (count_ones(x-WINDOW_RADIUS, y-WINDOW_RADIUS) > (GIBBS_SAMPLING_STEPS/2) ? this->background_color : this->foreground_color);
         }
 
         return result;
@@ -1294,12 +1294,14 @@ void training(unsigned int number_of_training_images, const char** training_imag
 #ifdef _WIN32
     __declspec(dllexport)
 #endif
-void inference(const char* input_image_filename, const char* json_file, const char* result_filename, double edge_weight, int inference_method, const char* intermediate_result, const char* ground_truth_image)
+void inference(const char* input_image_filename, const char* json_file, const char* result_filename, double edge_weight, int inference_method, const char* intermediate_result, const char* ground_truth_image, int gibbs_sampling_steps)
 {
     install_signal_handler();
 
     PAIRWISE_ENERGY = edge_weight;
     PAIRWISE_FACTOR = exp(-PAIRWISE_ENERGY);
+
+    GIBBS_SAMPLING_STEPS = gibbs_sampling_steps;
 
     Forest<PixelDifferenceTest> forest = Forest<PixelDifferenceTest>::load_from_file(json_file);
 
@@ -1412,7 +1414,7 @@ int main(int argc, char const *argv[])
 
     } else {
 
-        inference(input_image_filename, forest_file, label_image_filename, pairwise_energy, (inference_method == "maxflow" ? 0 : 1), NULL, NULL);
+        inference(input_image_filename, forest_file, label_image_filename, pairwise_energy, (inference_method == "maxflow" ? 0 : 1), NULL, NULL, 2000);
 
     }
 
