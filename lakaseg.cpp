@@ -48,6 +48,7 @@ std::ostream& operator<<(std::ostream& out, std::vector<T>& vec)
 // Ist nötig, weil diese Bibliothek innerhalb vom Python-Prozess läuft, an den
 // auch die Signale gehen würden.
 void signal_handler(int signal_number) {
+    std::cout << "Signal " << signal_number << " erhalten. Machs gut!" << std::endl;
     std::exit(1);
 }
 
@@ -358,6 +359,8 @@ std::wstring PixelDifferenceTest::name = L"PixelDifferenceTest";
 
 
 /*
+// zwei weitere Testfunktionen, die eventuell zum Debuggen nützlich sind
+
 // so ein Testobjekt beachtet die Nachbarpixel überhaupt nicht, sondern testet
 // einfach, ob das zu klassifizierende Pixel größer oder kleiner als ein
 // Schwellwert ist
@@ -560,7 +563,7 @@ public:
             double entropy_left = 0.0;
             double entropy_right = 0.0;
 
-            if(foreground_left > 0 && foreground_left < total_left) { // im
+            if(foreground_left > 0 && foreground_left < total_left) {
                 double p = static_cast<double>(foreground_left) / total_left;
 #ifdef _WIN32
                 // unter Windows gibts die Funktion log2() nicht
@@ -1134,9 +1137,7 @@ public:
             // Zähler erhöhen, wenns eine 1 ergibt
             // aber erst ab dem 10. Durchlauf, weil sich die Markow-Kette erst einschwingen muss
             if(versuch >= 10) {
-                cimg_forXY(count_ones, x, y) {
-                    count_ones(x, y) += (*y_t)(x, y);
-                }
+                count_ones += (*y_t);
             }
         }
 
